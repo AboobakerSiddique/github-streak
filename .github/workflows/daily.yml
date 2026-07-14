@@ -1,0 +1,34 @@
+name: Daily Commit
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update file
+        run: |
+          echo "$(date)" >> streak.txt
+
+      - name: Commit
+        run: |
+          git add streak.txt
+          git diff --cached --quiet || git commit -m "Daily Update"
+
+      - name: Push
+        run: |
+          git push
